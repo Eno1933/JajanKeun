@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({Key? key}) : super(key: key);
@@ -33,10 +34,19 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
     // Jalankan animasi
     _controller.forward();
 
-    // Navigasi otomatis setelah delay
-    Timer(const Duration(seconds: 3), () {
+    // Navigasi otomatis setelah delay + cek status login
+    Timer(const Duration(seconds: 3), _checkLoginStatus);
+  }
+
+  Future<void> _checkLoginStatus() async {
+    final prefs = await SharedPreferences.getInstance();
+    final isLoggedIn = prefs.getBool('is_logged_in') ?? false;
+
+    if (isLoggedIn) {
+      Navigator.pushReplacementNamed(context, '/user_dashboard');
+    } else {
       Navigator.pushReplacementNamed(context, '/onboarding');
-    });
+    }
   }
 
   @override

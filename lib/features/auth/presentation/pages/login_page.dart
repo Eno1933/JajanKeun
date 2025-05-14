@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import '../../data/services/auth_service.dart'; 
+import '../../data/services/auth_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-// ganti dengan nama projectmu
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -15,36 +14,43 @@ class _LoginPageState extends State<LoginPage> {
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   bool _isLoading = false;
+  bool _obscurePassword = true;
 
   void _login() async {
-  if (_formKey.currentState!.validate()) {
-    setState(() {
-      _isLoading = true;
-    });
+    if (_formKey.currentState!.validate()) {
+      setState(() {
+        _isLoading = true;
+      });
 
-    final response = await AuthService.login(
-      username: _usernameController.text.trim(),
-      password: _passwordController.text.trim(),
-    );
-
-    setState(() {
-      _isLoading = false;
-    });
-
-    if (response['success']) {
-      // Simpan status login ke SharedPreferences
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.setBool('is_logged_in', true);
-
-      // Arahkan ke dashboard
-      Navigator.pushReplacementNamed(context, '/user_dashboard');
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(response['message'])),
+      final response = await AuthService.login(
+        username: _usernameController.text.trim(),
+        password: _passwordController.text.trim(),
       );
+
+      setState(() {
+        _isLoading = false;
+      });
+
+      if (response['success'] == true) {
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.setBool('is_logged_in', true);
+
+        final user = response['user'];
+        if (user != null && user['name'] != null) {
+          await prefs.setString('user_name', user['name']);
+        } else {
+          await prefs.setString('user_name', 'Pengguna');
+        }
+
+        Navigator.pushReplacementNamed(context, '/user_dashboard');
+      } else {
+        final errorMessage = response['message'] ?? 'Login gagal. Coba lagi.';
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(errorMessage)),
+        );
+      }
     }
   }
-}
 
   @override
   Widget build(BuildContext context) {
@@ -54,7 +60,6 @@ class _LoginPageState extends State<LoginPage> {
         child: SingleChildScrollView(
           child: Column(
             children: [
-              // Gambar ilustrasi atas
               SizedBox(
                 width: double.infinity,
                 height: 180,
@@ -65,8 +70,6 @@ class _LoginPageState extends State<LoginPage> {
                 ),
               ),
               const SizedBox(height: 30),
-
-              // Tab Create Account & Login
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 24),
                 child: Row(
@@ -78,7 +81,6 @@ class _LoginPageState extends State<LoginPage> {
                       child: const Text(
                         'Create Account',
                         style: TextStyle(
-                          fontFamily: 'Poppins',
                           fontWeight: FontWeight.w500,
                           color: Colors.black54,
                         ),
@@ -90,7 +92,6 @@ class _LoginPageState extends State<LoginPage> {
                         const Text(
                           'Login',
                           style: TextStyle(
-                            fontFamily: 'Poppins',
                             fontWeight: FontWeight.bold,
                             color: Color(0xFF25523B),
                           ),
@@ -110,8 +111,6 @@ class _LoginPageState extends State<LoginPage> {
                 ),
               ),
               const SizedBox(height: 24),
-
-              // Form Login
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 24),
                 child: Form(
@@ -122,7 +121,6 @@ class _LoginPageState extends State<LoginPage> {
                       const Text(
                         "Username or Email",
                         style: TextStyle(
-                          fontFamily: 'Poppins',
                           fontWeight: FontWeight.w400,
                           fontSize: 14,
                         ),
@@ -137,6 +135,8 @@ class _LoginPageState extends State<LoginPage> {
                           return null;
                         },
                         decoration: InputDecoration(
+                          prefixIcon: const Icon(Icons.person),
+                          hintText: 'Enter username or email',
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(10),
                           ),
@@ -146,7 +146,6 @@ class _LoginPageState extends State<LoginPage> {
                       const Text(
                         "Password",
                         style: TextStyle(
-                          fontFamily: 'Poppins',
                           fontWeight: FontWeight.w400,
                           fontSize: 14,
                         ),
@@ -154,7 +153,7 @@ class _LoginPageState extends State<LoginPage> {
                       const SizedBox(height: 8),
                       TextFormField(
                         controller: _passwordController,
-                        obscureText: true,
+                        obscureText: _obscurePassword,
                         validator: (value) {
                           if (value == null || value.isEmpty) {
                             return 'Please enter your password';
@@ -162,6 +161,18 @@ class _LoginPageState extends State<LoginPage> {
                           return null;
                         },
                         decoration: InputDecoration(
+                          prefixIcon: const Icon(Icons.lock),
+                          suffixIcon: IconButton(
+                            icon: Icon(
+                              _obscurePassword ? Icons.visibility_off : Icons.visibility,
+                            ),
+                            onPressed: () {
+                              setState(() {
+                                _obscurePassword = !_obscurePassword;
+                              });
+                            },
+                          ),
+                          hintText: 'Enter password',
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(10),
                           ),
@@ -175,7 +186,6 @@ class _LoginPageState extends State<LoginPage> {
                           child: const Text(
                             "Forget Password?",
                             style: TextStyle(
-                              fontFamily: 'Poppins',
                               fontWeight: FontWeight.w400,
                               color: Colors.black54,
                             ),
@@ -183,8 +193,6 @@ class _LoginPageState extends State<LoginPage> {
                         ),
                       ),
                       const SizedBox(height: 12),
-
-                      // Tombol Login
                       Center(
                         child: ElevatedButton(
                           onPressed: _isLoading ? null : _login,
@@ -200,20 +208,16 @@ class _LoginPageState extends State<LoginPage> {
                             ),
                           ),
                           child: _isLoading
-                              ? const CircularProgressIndicator(
-                                  color: Colors.white,
-                                )
+                              ? const CircularProgressIndicator(color: Colors.white)
                               : const Text(
                                   "Login",
                                   style: TextStyle(
-                                    fontFamily: 'Poppins',
                                     fontWeight: FontWeight.bold,
                                     fontSize: 16,
                                   ),
                                 ),
                         ),
                       ),
-
                       const SizedBox(height: 15),
                       Center(
                         child: Container(
@@ -223,8 +227,6 @@ class _LoginPageState extends State<LoginPage> {
                         ),
                       ),
                       const SizedBox(height: 15),
-
-                      // Tombol Login with Google
                       Center(
                         child: OutlinedButton.icon(
                           onPressed: () {},
@@ -235,7 +237,6 @@ class _LoginPageState extends State<LoginPage> {
                           label: const Text(
                             "Login with Google",
                             style: TextStyle(
-                              fontFamily: 'Poppins',
                               fontWeight: FontWeight.w500,
                               color: Colors.black,
                               fontSize: 14,

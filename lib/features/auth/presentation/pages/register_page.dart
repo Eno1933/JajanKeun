@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../data/services/auth_service.dart'; // Import service yang nanti dibuat
+import '../../data/services/auth_service.dart';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
@@ -9,7 +9,8 @@ class RegisterPage extends StatefulWidget {
 }
 
 class _RegisterPageState extends State<RegisterPage> {
-  // Text controllers
+  final _formKey = GlobalKey<FormState>();
+
   final TextEditingController nameController = TextEditingController();
   final TextEditingController usernameController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
@@ -21,6 +22,8 @@ class _RegisterPageState extends State<RegisterPage> {
   bool isLoading = false;
 
   void register() async {
+    if (!_formKey.currentState!.validate()) return;
+
     if (passwordController.text != confirmPasswordController.text) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Password dan Confirm Password tidak sama')),
@@ -45,15 +48,14 @@ class _RegisterPageState extends State<RegisterPage> {
       isLoading = false;
     });
 
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(response['message'])),
+    );
+
     if (response['success']) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(response['message'])),
-      );
-      Navigator.pushReplacementNamed(context, '/login'); // atau ke halaman login
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(response['message'] ?? 'Register gagal')),
-      );
+      Future.delayed(const Duration(seconds: 1), () {
+        Navigator.pushReplacementNamed(context, '/login');
+      });
     }
   }
 
@@ -64,7 +66,6 @@ class _RegisterPageState extends State<RegisterPage> {
       body: SafeArea(
         child: Column(
           children: [
-             // Gambar ilustrasi atas (bisa ganti asset sesuai kebutuhan)
             SizedBox(
               width: double.infinity,
               height: 180,
@@ -74,10 +75,7 @@ class _RegisterPageState extends State<RegisterPage> {
                 alignment: Alignment.topCenter,
               ),
             ),
-
             const SizedBox(height: 30),
-
-            // Tab Create Account & Login
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 24),
               child: Row(
@@ -87,7 +85,6 @@ class _RegisterPageState extends State<RegisterPage> {
                       const Text(
                         'Create Account',
                         style: TextStyle(
-                          fontFamily: 'Poppins',
                           fontWeight: FontWeight.bold,
                           color: Color(0xFF25523B),
                         ),
@@ -111,7 +108,6 @@ class _RegisterPageState extends State<RegisterPage> {
                     child: const Text(
                       'Login',
                       style: TextStyle(
-                        fontFamily: 'Poppins',
                         fontWeight: FontWeight.w500,
                         color: Colors.black54,
                       ),
@@ -120,137 +116,81 @@ class _RegisterPageState extends State<RegisterPage> {
                 ],
               ),
             ),
-            // (Bagian ilustrasi dan tab Create/Login tetap)
-            // .... [SKIP] ....
-
             const SizedBox(height: 24),
-
-            // Form Register
             Expanded(
               child: SingleChildScrollView(
                 padding: const EdgeInsets.symmetric(horizontal: 24),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // Name
-                    const Text("Name", style: TextStyle(fontFamily: 'Poppins', fontSize: 14)),
-                    const SizedBox(height: 8),
-                    TextFormField(
-                      controller: nameController,
-                      decoration: InputDecoration(
-                        hintStyle: const TextStyle(fontFamily: 'Poppins'),
-                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
-                      ),
-                    ),
-
-                    const SizedBox(height: 16),
-                    // Username
-                    const Text("Username", style: TextStyle(fontFamily: 'Poppins', fontSize: 14)),
-                    const SizedBox(height: 8),
-                    TextFormField(
-                      controller: usernameController,
-                      decoration: InputDecoration(
-                        hintStyle: const TextStyle(fontFamily: 'Poppins'),
-                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
-                      ),
-                    ),
-
-                    const SizedBox(height: 16),
-                    // Email
-                    const Text("Email address", style: TextStyle(fontFamily: 'Poppins', fontSize: 14)),
-                    const SizedBox(height: 8),
-                    TextFormField(
-                      controller: emailController,
-                      keyboardType: TextInputType.emailAddress,
-                      decoration: InputDecoration(
-                        hintStyle: const TextStyle(fontFamily: 'Poppins'),
-                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
-                      ),
-                    ),
-
-                    const SizedBox(height: 16),
-                    // Password
-                    const Text("Password", style: TextStyle(fontFamily: 'Poppins', fontSize: 14)),
-                    const SizedBox(height: 8),
-                    TextFormField(
-                      controller: passwordController,
-                      obscureText: true,
-                      decoration: InputDecoration(
-                        hintStyle: const TextStyle(fontFamily: 'Poppins'),
-                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
-                      ),
-                    ),
-
-                    const SizedBox(height: 16),
-                    // Confirm Password
-                    const Text("Confirm Password", style: TextStyle(fontFamily: 'Poppins', fontSize: 14)),
-                    const SizedBox(height: 8),
-                    TextFormField(
-                      controller: confirmPasswordController,
-                      obscureText: true,
-                      decoration: InputDecoration(
-                        hintStyle: const TextStyle(fontFamily: 'Poppins'),
-                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
-                      ),
-                    ),
-
-                    const SizedBox(height: 16),
-                    // Phone
-                    const Text("Phone", style: TextStyle(fontFamily: 'Poppins', fontSize: 14)),
-                    const SizedBox(height: 8),
-                    TextFormField(
-                      controller: phoneController,
-                      keyboardType: TextInputType.phone,
-                      decoration: InputDecoration(
-                        hintStyle: const TextStyle(fontFamily: 'Poppins'),
-                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
-                      ),
-                    ),
-
-                    const SizedBox(height: 16),
-                    // Address
-                    const Text("Address", style: TextStyle(fontFamily: 'Poppins', fontSize: 14)),
-                    const SizedBox(height: 8),
-                    TextFormField(
-                      controller: addressController,
-                      maxLines: 3,
-                      decoration: InputDecoration(
-
-                        hintStyle: const TextStyle(fontFamily: 'Poppins'),
-                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
-                      ),
-                    ),
-
-                    const SizedBox(height: 24),
-
-                    // Register Button
-                    Center(
-                      child: ElevatedButton(
-                        onPressed: isLoading ? null : register,
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFF25523B),
-                          foregroundColor: Colors.white,
-                          padding: const EdgeInsets.symmetric(horizontal: 100, vertical: 20),
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                        ),
-                        child: Text(
-                          isLoading ? "Loading..." : "Register",
-                          style: const TextStyle(
-                            fontFamily: 'Poppins',
-                            fontWeight: FontWeight.bold,
-                            fontSize: 16,
+                child: Form(
+                  key: _formKey,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      buildTextField('Name', nameController),
+                      buildTextField('Username', usernameController),
+                      buildTextField('Email address', emailController, type: TextInputType.emailAddress),
+                      buildTextField('Password', passwordController, isPassword: true),
+                      buildTextField('Confirm Password', confirmPasswordController, isPassword: true),
+                      buildTextField('Phone', phoneController, type: TextInputType.phone),
+                      buildTextField('Address', addressController, maxLines: 3),
+                      const SizedBox(height: 24),
+                      Center(
+                        child: ElevatedButton(
+                          onPressed: isLoading ? null : register,
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color(0xFF25523B),
+                            foregroundColor: Colors.white,
+                            padding: const EdgeInsets.symmetric(horizontal: 100, vertical: 20),
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                          ),
+                          child: Text(
+                            isLoading ? "Loading..." : "Register",
+                            style: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
+                            ),
                           ),
                         ),
                       ),
-                    ),
-
-                    const SizedBox(height: 24),
-                  ],
+                      const SizedBox(height: 24),
+                    ],
+                  ),
                 ),
               ),
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget buildTextField(String label, TextEditingController controller,
+      {TextInputType type = TextInputType.text, bool isPassword = false, int maxLines = 1}) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(label, style: const TextStyle( fontSize: 14)),
+          const SizedBox(height: 8),
+          TextFormField(
+            controller: controller,
+            keyboardType: type,
+            obscureText: isPassword,
+            maxLines: maxLines,
+            validator: (value) => value == null || value.isEmpty ? '$label wajib diisi' : null,
+            decoration: InputDecoration(
+              border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+              errorBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+                borderSide: const BorderSide(color: Colors.red),
+              ),
+              focusedErrorBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+                borderSide: const BorderSide(color: Colors.red),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

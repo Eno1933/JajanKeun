@@ -1,10 +1,11 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
 class AuthService {
-  static const String baseUrl = "http://localhost/jajankeun_api";
+  static const String baseUrl = "http://192.168.12.44/jajankeun_api";
 
-  // Fungsi LOGIN
+  // LOGIN
   static Future<Map<String, dynamic>> login({
     required String username,
     required String password,
@@ -18,23 +19,26 @@ class AuthService {
         },
       );
 
-      if (response.statusCode == 200) {
-        return jsonDecode(response.body);
-      } else {
-        return {
-          "success": false,
-          "message": "Server error ${response.statusCode}",
-        };
+      final data = jsonDecode(response.body);
+
+      if (data['success'] == true) {
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.setString('user_id', data['data']['id'].toString());
+        await prefs.setString('name', data['data']['name']);
+        await prefs.setString('username', data['data']['username']);
+        // Simpan data lain jika dibutuhkan
       }
+
+      return data;
     } catch (e) {
       return {
         "success": false,
-        "message": e.toString(),
+        "message": "Terjadi kesalahan: ${e.toString()}",
       };
     }
   }
 
-  // Fungsi REGISTER
+  // REGISTER
   static Future<Map<String, dynamic>> register({
     required String name,
     required String username,
@@ -56,18 +60,12 @@ class AuthService {
         },
       );
 
-      if (response.statusCode == 200) {
-        return jsonDecode(response.body);
-      } else {
-        return {
-          "success": false,
-          "message": "Server error ${response.statusCode}",
-        };
-      }
+      final data = jsonDecode(response.body);
+      return data;
     } catch (e) {
       return {
         "success": false,
-        "message": e.toString(),
+        "message": "Terjadi kesalahan: ${e.toString()}",
       };
     }
   }

@@ -192,7 +192,12 @@ class _UserDashboardState extends State<UserDashboard> {
         selectedItemColor: const Color(0xFF25523B),
         unselectedItemColor: Colors.grey,
         currentIndex: 0,
-        onTap: (index) {},
+        onTap: (index) {
+          if (index == 3) {
+            Navigator.pushNamed(context, '/profile');
+          }
+          // Tambahkan navigasi ke tab lain jika dibutuhkan
+        },
         items: const [
           BottomNavigationBarItem(
             icon: Icon(Icons.home),

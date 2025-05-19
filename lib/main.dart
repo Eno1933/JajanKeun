@@ -6,6 +6,7 @@ import 'features/auth/presentation/pages/onboarding_screen.dart';
 import 'features/auth/presentation/pages/register_page.dart';
 import 'features/auth/presentation/pages/user_dashboard.dart';
 import 'features/auth/presentation/pages/settings_page.dart';
+import 'features/auth/presentation/pages/user_profile_page.dart';
 
 void main() {
   runApp(const JajanKeunApp());
@@ -32,6 +33,7 @@ class JajanKeunApp extends StatelessWidget {
         '/register': (_) => const RegisterPage(),
         '/settings': (context) => const SettingsPage(),
         '/user_dashboard': (_) => UserDashboard(), // ✅ gunakan underscore
+        '/profile': (context) => const UserProfilePage(),
       },
     );
   }

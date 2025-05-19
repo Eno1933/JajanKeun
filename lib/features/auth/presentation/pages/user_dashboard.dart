@@ -20,17 +20,19 @@ class _UserDashboardState extends State<UserDashboard> {
   ];
 
   String userName = '';
+  String userPhoto = '';
 
   @override
   void initState() {
     super.initState();
-    loadUserName();
+    loadUserData();
   }
 
-  Future<void> loadUserName() async {
+  Future<void> loadUserData() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     setState(() {
       userName = prefs.getString('name') ?? '';
+      userPhoto = prefs.getString('photo') ?? '';
     });
   }
 
@@ -57,8 +59,18 @@ class _UserDashboardState extends State<UserDashboard> {
             padding: const EdgeInsets.fromLTRB(16, 40, 16, 12),
             child: Row(
               children: [
-                const CircleAvatar(
-                  backgroundImage: AssetImage('assets/images/user.png'),
+                GestureDetector(
+                  onTap: () {
+                    Navigator.pushNamed(context, '/profile');
+                  },
+                  child: CircleAvatar(
+                    backgroundImage: userPhoto.isNotEmpty
+                        ? NetworkImage(
+                            'http://192.168.12.44/jajankeun_api/uploads/profile/$userPhoto')
+                        : const AssetImage('assets/images/user.png')
+                            as ImageProvider,
+                    radius: 20,
+                  ),
                 ),
                 const SizedBox(width: 10),
                 Expanded(

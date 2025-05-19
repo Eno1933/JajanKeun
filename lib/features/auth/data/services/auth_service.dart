@@ -3,7 +3,7 @@ import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AuthService {
-  static const String baseUrl = "http://10.11.13.61/jajankeun_api";
+  static const String baseUrl = "http://192.168.12.44/jajankeun_api";
 
   // LOGIN
   static Future<Map<String, dynamic>> login({
@@ -32,6 +32,7 @@ class AuthService {
         await prefs.setString('phone', userData['phone'] ?? '');
         await prefs.setString('address', userData['address'] ?? '');
         await prefs.setString('role', userData['role'] ?? '');
+        await prefs.setString('photo', userData['photo'] ?? ''); // Tambahan penting!
       }
 
       return data;

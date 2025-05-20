@@ -72,8 +72,11 @@ class _UserDashboardState extends State<UserDashboard> {
                   child: CircleAvatar(
                     radius: 20,
                     backgroundImage: userPhoto.isNotEmpty
-                        ? NetworkImage('http://192.168.12.44/jajankeun_api/uploads/profile/$userPhoto')
-                        : const AssetImage('assets/images/user.png') as ImageProvider,
+                        ? NetworkImage(
+                            'http://192.168.12.44/jajankeun_api/uploads/profile/$userPhoto')
+                        : const AssetImage('assets/images/user.png')
+                            as ImageProvider,
+                    radius: 20,
                   ),
                 ),
                 const SizedBox(width: 10),
@@ -195,10 +198,10 @@ class _UserDashboardState extends State<UserDashboard> {
         currentIndex: 0,
         selectedItemColor: const Color(0xFF25523B),
         unselectedItemColor: Colors.grey,
-        type: BottomNavigationBarType.fixed,
-        onTap: (idx) async {
-          if (idx == 3) {
-            await _openProfile();
+        currentIndex: 0,
+        onTap: (index) {
+          if (index == 3) {
+            Navigator.pushNamed(context, '/profile');
           }
           // handle other tabs...
         },

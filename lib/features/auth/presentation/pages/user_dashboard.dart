@@ -66,7 +66,7 @@ class _UserDashboardState extends State<UserDashboard> {
                   child: CircleAvatar(
                     backgroundImage: userPhoto.isNotEmpty
                         ? NetworkImage(
-                            'http://192.168.12.44/jajankeun_api/uploads/profile/$userPhoto')
+                            'http://10.11.13.12/jajankeun_api/uploads/profile/$userPhoto')
                         : const AssetImage('assets/images/user.png')
                             as ImageProvider,
                     radius: 20,
@@ -207,6 +207,8 @@ class _UserDashboardState extends State<UserDashboard> {
         onTap: (index) {
           if (index == 3) {
             Navigator.pushNamed(context, '/profile');
+          } else if (index == 2) {
+            Navigator.pushNamed(context, '/orders'); // ✅ navigasi ke Orders
           }
           // Tambahkan navigasi ke tab lain jika dibutuhkan
         },

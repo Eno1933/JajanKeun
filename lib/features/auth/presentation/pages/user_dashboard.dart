@@ -1,3 +1,5 @@
+// lib/features/auth/presentation/pages/user_dashboard.dart
+
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -29,23 +31,27 @@ class _UserDashboardState extends State<UserDashboard> {
   }
 
   Future<void> loadUserData() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
+    final prefs = await SharedPreferences.getInstance();
     setState(() {
       userName = prefs.getString('name') ?? '';
       userPhoto = prefs.getString('photo') ?? '';
     });
   }
 
+  Future<void> _openProfile() async {
+    // buka profile dan tunggu hasilnya
+    final result = await Navigator.pushNamed(context, '/profile');
+    if (result == true) {
+      await loadUserData();
+    }
+  }
+
   void _onMenuSelected(String value) {
-    switch (value) {
-      case 'notifikasi':
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Fitur Notifikasi belum tersedia')),
-        );
-        break;
-      case 'pengaturan':
-        Navigator.pushNamed(context, '/settings');
-        break;
+    if (value == 'notifikasi') {
+      ScaffoldMessenger.of(context)
+          .showSnackBar(const SnackBar(content: Text('Fitur Notifikasi belum tersedia')));
+    } else if (value == 'pengaturan') {
+      Navigator.pushNamed(context, '/settings');
     }
   }
 
@@ -55,21 +61,19 @@ class _UserDashboardState extends State<UserDashboard> {
       backgroundColor: Colors.white,
       body: Column(
         children: [
+          // HEADER
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 40, 16, 12),
             child: Row(
               children: [
+                // Avatar tappable
                 GestureDetector(
-                  onTap: () {
-                    Navigator.pushNamed(context, '/profile');
-                  },
+                  onTap: _openProfile,
                   child: CircleAvatar(
-                    backgroundImage: userPhoto.isNotEmpty
-                        ? NetworkImage(
-                            'http://192.168.12.44/jajankeun_api/uploads/profile/$userPhoto')
-                        : const AssetImage('assets/images/user.png')
-                            as ImageProvider,
                     radius: 20,
+                    backgroundImage: userPhoto.isNotEmpty
+                        ? NetworkImage('http://192.168.12.44/jajankeun_api/uploads/profile/$userPhoto')
+                        : const AssetImage('assets/images/user.png') as ImageProvider,
                   ),
                 ),
                 const SizedBox(width: 10),
@@ -78,7 +82,6 @@ class _UserDashboardState extends State<UserDashboard> {
                     "Halo, $userName",
                     style: GoogleFonts.poppins(
                       fontSize: 16,
-                      color: Colors.black,
                       fontWeight: FontWeight.w600,
                     ),
                   ),
@@ -86,20 +89,16 @@ class _UserDashboardState extends State<UserDashboard> {
                 PopupMenuButton<String>(
                   icon: const Icon(Icons.menu, color: Colors.black),
                   onSelected: _onMenuSelected,
-                  itemBuilder: (BuildContext context) => [
-                    const PopupMenuItem<String>(
-                      value: 'notifikasi',
-                      child: Text('Notifikasi'),
-                    ),
-                    const PopupMenuItem<String>(
-                      value: 'pengaturan',
-                      child: Text('Pengaturan'),
-                    ),
+                  itemBuilder: (_) => const [
+                    PopupMenuItem(value: 'notifikasi', child: Text('Notifikasi')),
+                    PopupMenuItem(value: 'pengaturan', child: Text('Pengaturan')),
                   ],
                 ),
               ],
             ),
           ),
+
+          // LIST
           Expanded(
             child: CustomScrollView(
               slivers: [
@@ -122,17 +121,13 @@ class _UserDashboardState extends State<UserDashboard> {
                 ),
                 SliverList(
                   delegate: SliverChildBuilderDelegate(
-                    (context, index) {
+                    (ctx, i) {
                       return Padding(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 16, vertical: 8),
+                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                         child: Container(
                           decoration: BoxDecoration(
                             gradient: const LinearGradient(
-                              colors: [
-                                Color(0xFF25523B),
-                                Color.fromARGB(255, 146, 177, 157),
-                              ],
+                              colors: [Color(0xFF25523B), Color(0xFF92B19D)],
                               begin: Alignment.centerLeft,
                               end: Alignment.centerRight,
                             ),
@@ -144,11 +139,10 @@ class _UserDashboardState extends State<UserDashboard> {
                               children: [
                                 Expanded(
                                   child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
+                                    crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
                                       Text(
-                                        canteens[index],
+                                        canteens[i],
                                         style: GoogleFonts.poppins(
                                           color: Colors.white,
                                           fontSize: 18,
@@ -158,25 +152,20 @@ class _UserDashboardState extends State<UserDashboard> {
                                       const SizedBox(height: 4),
                                       Text(
                                         "We are here with the best food",
-                                        style: GoogleFonts.poppins(
-                                            color: Colors.white70),
+                                        style: GoogleFonts.poppins(color: Colors.white70),
                                       ),
                                       const SizedBox(height: 8),
                                       ElevatedButton(
                                         onPressed: () {},
                                         style: ElevatedButton.styleFrom(
                                           backgroundColor: Colors.white,
-                                          foregroundColor:
-                                              const Color(0xFF25523B),
-                                          padding: const EdgeInsets.symmetric(
-                                              horizontal: 20),
+                                          foregroundColor: const Color(0xFF25523B),
+                                          padding: const EdgeInsets.symmetric(horizontal: 20),
                                           shape: RoundedRectangleBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(8),
-                                          ),
+                                              borderRadius: BorderRadius.circular(8)),
                                         ),
                                         child: const Text("Kunjungi"),
-                                      ),
+                                      )
                                     ],
                                   ),
                                 ),
@@ -200,35 +189,25 @@ class _UserDashboardState extends State<UserDashboard> {
           ),
         ],
       ),
+
+      // BOTTOM NAV
       bottomNavigationBar: BottomNavigationBar(
+        currentIndex: 0,
         selectedItemColor: const Color(0xFF25523B),
         unselectedItemColor: Colors.grey,
-        currentIndex: 0,
-        onTap: (index) {
-          if (index == 3) {
-            Navigator.pushNamed(context, '/profile');
+        type: BottomNavigationBarType.fixed,
+        onTap: (idx) async {
+          if (idx == 3) {
+            await _openProfile();
           }
-          // Tambahkan navigasi ke tab lain jika dibutuhkan
+          // handle other tabs...
         },
         items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Home',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.shopping_cart),
-            label: 'Cart',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.receipt_long),
-            label: 'Orders',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person),
-            label: 'Profile',
-          ),
+          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
+          BottomNavigationBarItem(icon: Icon(Icons.shopping_cart), label: 'Cart'),
+          BottomNavigationBarItem(icon: Icon(Icons.receipt_long), label: 'Orders'),
+          BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
         ],
-        type: BottomNavigationBarType.fixed,
       ),
     );
   }

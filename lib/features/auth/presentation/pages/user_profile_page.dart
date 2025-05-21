@@ -56,7 +56,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
 
     final req = http.MultipartRequest(
       'POST',
-      Uri.parse('http://10.11.13.12/jajankeun_api/update_photo.php'),
+      Uri.parse('http://192.168.12.44/jajankeun_api/update_photo.php'),
     );
     req.fields['user_id'] = userId;
     req.files.add(await http.MultipartFile.fromPath('photo', picked.path));
@@ -96,15 +96,20 @@ class _UserProfilePageState extends State<UserProfilePage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(title, style: GoogleFonts.poppins(fontWeight: FontWeight.w600, fontSize: 16)),
+          Text(title,
+              style: GoogleFonts.poppins(
+                  fontWeight: FontWeight.w600, fontSize: 16)),
           const SizedBox(height: 10),
           ...items.entries.map((e) => Padding(
                 padding: const EdgeInsets.only(bottom: 12),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text(e.key, style: GoogleFonts.poppins(color: Colors.grey[700])),
-                    Text(e.value ?? '-', style: GoogleFonts.poppins(fontWeight: FontWeight.w500)),
+                    Text(e.key,
+                        style: GoogleFonts.poppins(color: Colors.grey[700])),
+                    Text(e.value ?? '-',
+                        style:
+                            GoogleFonts.poppins(fontWeight: FontWeight.w500)),
                   ],
                 ),
               )),
@@ -125,7 +130,6 @@ class _UserProfilePageState extends State<UserProfilePage> {
         Navigator.pushReplacementNamed(context, '/orders');
         break;
       case 3:
-        // sudah di profile
         break;
     }
   }
@@ -148,7 +152,9 @@ class _UserProfilePageState extends State<UserProfilePage> {
               decoration: BoxDecoration(
                 color: Colors.white,
                 shape: BoxShape.circle,
-                boxShadow: const [BoxShadow(color: Colors.black12, blurRadius: 4)],
+                boxShadow: const [
+                  BoxShadow(color: Colors.black12, blurRadius: 4)
+                ],
               ),
               child: IconButton(
                 icon: const Icon(Icons.notifications, color: Colors.black),
@@ -166,10 +172,12 @@ class _UserProfilePageState extends State<UserProfilePage> {
               children: [
                 CircleAvatar(
                   radius: 50,
-                  backgroundImage: userData['photo'] != null && userData['photo']!.isNotEmpty
+                  backgroundImage: userData['photo'] != null &&
+                          userData['photo']!.isNotEmpty
                       ? NetworkImage(
                           'http://192.168.12.44/jajankeun_api/uploads/profile/${userData['photo']}')
-                      : const AssetImage('assets/images/user.png') as ImageProvider,
+                      : const AssetImage('assets/images/user.png')
+                          as ImageProvider,
                 ),
                 Positioned(
                   bottom: 0,
@@ -179,7 +187,8 @@ class _UserProfilePageState extends State<UserProfilePage> {
                     child: const CircleAvatar(
                       radius: 16,
                       backgroundColor: Colors.white,
-                      child: Icon(Icons.edit, color: Color(0xFF25523B), size: 18),
+                      child:
+                          Icon(Icons.edit, color: Color(0xFF25523B), size: 18),
                     ),
                   ),
                 ),
@@ -189,7 +198,8 @@ class _UserProfilePageState extends State<UserProfilePage> {
           const SizedBox(height: 16),
           Center(
             child: Text(userData['name'] ?? '',
-                style: GoogleFonts.poppins(fontSize: 20, fontWeight: FontWeight.bold)),
+                style: GoogleFonts.poppins(
+                    fontSize: 20, fontWeight: FontWeight.bold)),
           ),
           const SizedBox(height: 4),
           Center(
@@ -202,7 +212,9 @@ class _UserProfilePageState extends State<UserProfilePage> {
           buildInfoCard("Personal Info", {
             "Nama Lengkap": userData['name'],
             "Alamat": userData['address'],
-            "Role": userData['role']?.toLowerCase() == 'siswa' ? 'Siswa' : userData['role'],
+            "Role": userData['role']?.toLowerCase() == 'siswa'
+                ? 'Siswa'
+                : userData['role'],
           }),
           buildInfoCard("Contact Info", {
             "No Handphone": userData['phone'],
@@ -212,13 +224,22 @@ class _UserProfilePageState extends State<UserProfilePage> {
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20),
             child: ElevatedButton(
-              onPressed: () => Navigator.pushNamed(context, '/edit-profile'),
+              onPressed: () async {
+                final result =
+                    await Navigator.pushNamed(context, '/edit-profile');
+                if (result == true) {
+                  loadUserData(); // Refresh data user setelah edit
+                }
+              },
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFF25523B),
                 padding: const EdgeInsets.symmetric(vertical: 14),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12)),
               ),
-              child: Text("Edit", style: GoogleFonts.poppins(color: Colors.white, fontWeight: FontWeight.w600)),
+              child: Text("Edit",
+                  style: GoogleFonts.poppins(
+                      color: Colors.white, fontWeight: FontWeight.w600)),
             ),
           ),
           const SizedBox(height: 24),
@@ -232,8 +253,10 @@ class _UserProfilePageState extends State<UserProfilePage> {
         type: BottomNavigationBarType.fixed,
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-          BottomNavigationBarItem(icon: Icon(Icons.shopping_cart), label: 'Cart'),
-          BottomNavigationBarItem(icon: Icon(Icons.receipt_long), label: 'Orders'),
+          BottomNavigationBarItem(
+              icon: Icon(Icons.shopping_cart), label: 'Cart'),
+          BottomNavigationBarItem(
+              icon: Icon(Icons.receipt_long), label: 'Orders'),
           BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
         ],
       ),

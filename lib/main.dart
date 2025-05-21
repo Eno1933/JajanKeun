@@ -7,7 +7,9 @@ import 'features/auth/presentation/pages/register_page.dart';
 import 'features/auth/presentation/pages/user_dashboard.dart';
 import 'features/auth/presentation/pages/settings_page.dart';
 import 'features/auth/presentation/pages/user_profile_page.dart';
+import 'features/auth/presentation/pages/edit_profile.dart';
 import 'features/auth/presentation/pages/orders_page.dart';
+
 
 void main() {
   runApp(const JajanKeunApp());
@@ -36,6 +38,7 @@ class JajanKeunApp extends StatelessWidget {
         '/user_dashboard': (_) => UserDashboard(), // ✅ gunakan underscore
         '/orders': (context) => const OrdersPage(),
         '/profile': (context) => const UserProfilePage(),
+        '/edit-profile': (context) => const EditProfilePage(),
       },
     );
   }

@@ -56,7 +56,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
 
     final req = http.MultipartRequest(
       'POST',
-      Uri.parse('http://10.11.13.12/jajankeun_api/update_photo.php'),
+      Uri.parse('http://192.168.12.44/jajankeun_api/update_photo.php'),
     );
     req.fields['user_id'] = userId;
     req.files.add(await http.MultipartFile.fromPath('photo', picked.path));

@@ -1,5 +1,3 @@
-// lib/features/auth/presentation/pages/user_dashboard.dart
-
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -39,17 +37,17 @@ class _UserDashboardState extends State<UserDashboard> {
   }
 
   Future<void> _openProfile() async {
-    // buka profile dan tunggu hasilnya
     final result = await Navigator.pushNamed(context, '/profile');
-    if (result == true) {
-      await loadUserData();
+    if (result != null) {
+      await loadUserData(); // refresh data tanpa bergantung pada true/false
     }
   }
 
   void _onMenuSelected(String value) {
     if (value == 'notifikasi') {
-      ScaffoldMessenger.of(context)
-          .showSnackBar(const SnackBar(content: Text('Fitur Notifikasi belum tersedia')));
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Fitur Notifikasi belum tersedia')),
+      );
     } else if (value == 'pengaturan') {
       Navigator.pushNamed(context, '/settings');
     }
@@ -61,22 +59,18 @@ class _UserDashboardState extends State<UserDashboard> {
       backgroundColor: Colors.white,
       body: Column(
         children: [
-          // HEADER
+          // Header
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 40, 16, 12),
             child: Row(
               children: [
-                // Avatar tappable
                 GestureDetector(
                   onTap: _openProfile,
                   child: CircleAvatar(
                     radius: 20,
                     backgroundImage: userPhoto.isNotEmpty
-                        ? NetworkImage(
-                            'http://192.168.12.44/jajankeun_api/uploads/profile/$userPhoto')
-                        : const AssetImage('assets/images/user.png')
-                            as ImageProvider,
-                    radius: 20,
+                        ? NetworkImage('http://192.168.12.44/jajankeun_api/uploads/profile/$userPhoto')
+                        : const AssetImage('assets/images/user.png') as ImageProvider,
                   ),
                 ),
                 const SizedBox(width: 10),
@@ -101,7 +95,7 @@ class _UserDashboardState extends State<UserDashboard> {
             ),
           ),
 
-          // LIST
+          // List
           Expanded(
             child: CustomScrollView(
               slivers: [
@@ -165,7 +159,8 @@ class _UserDashboardState extends State<UserDashboard> {
                                           foregroundColor: const Color(0xFF25523B),
                                           padding: const EdgeInsets.symmetric(horizontal: 20),
                                           shape: RoundedRectangleBorder(
-                                              borderRadius: BorderRadius.circular(8)),
+                                            borderRadius: BorderRadius.circular(8),
+                                          ),
                                         ),
                                         child: const Text("Kunjungi"),
                                       )
@@ -193,22 +188,27 @@ class _UserDashboardState extends State<UserDashboard> {
         ],
       ),
 
-      // BOTTOM NAV
+      // Bottom Navigation Bar
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: 0,
         selectedItemColor: const Color(0xFF25523B),
         unselectedItemColor: Colors.grey,
-        currentIndex: 0,
         onTap: (index) {
           if (index == 3) {
             Navigator.pushNamed(context, '/profile');
           }
+          else if(index == 2) {
+            Navigator.pushNamed(context, '/orders');
+          }
           // handle other tabs...
         },
+        type: BottomNavigationBarType.fixed,
         items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-          BottomNavigationBarItem(icon: Icon(Icons.shopping_cart), label: 'Cart'),
-          BottomNavigationBarItem(icon: Icon(Icons.receipt_long), label: 'Orders'),
+         BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
+          BottomNavigationBarItem(
+              icon: Icon(Icons.shopping_cart), label: 'Cart'),
+          BottomNavigationBarItem(
+              icon: Icon(Icons.receipt_long), label: 'Orders'),
           BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
         ],
       ),

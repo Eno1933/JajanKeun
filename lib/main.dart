@@ -9,6 +9,8 @@ import 'features/auth/presentation/pages/settings_page.dart';
 import 'features/auth/presentation/pages/user_profile_page.dart';
 import 'features/auth/presentation/pages/edit_profile.dart';
 import 'features/auth/presentation/pages/orders_page.dart';
+import 'features/auth/presentation/pages/merchant_dashboard.dart';
+import 'features/auth/presentation/pages/verify_merchant_page.dart';
 
 
 void main() {
@@ -39,6 +41,8 @@ class JajanKeunApp extends StatelessWidget {
         '/orders': (context) => const OrdersPage(),
         '/profile': (context) => const UserProfilePage(),
         '/edit-profile': (context) => const EditProfilePage(),
+        '/merchant_dashboard': (_) => const MerchantDashboard(),
+        '/verify_merchant_profile': (ctx) => const VerifyMerchantProfilePage(),
       },
     );
   }

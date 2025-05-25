@@ -1,8 +1,28 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class SettingsPage extends StatelessWidget {
+class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key});
+
+  @override
+  State<SettingsPage> createState() => _SettingsPageState();
+}
+
+class _SettingsPageState extends State<SettingsPage> {
+  String _userRole = '';
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUserRole();
+  }
+
+  Future<void> _loadUserRole() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _userRole = prefs.getString('role') ?? 'user';
+    });
+  }
 
   Future<void> _logout(BuildContext context) async {
     final prefs = await SharedPreferences.getInstance();
@@ -31,6 +51,15 @@ class SettingsPage extends StatelessWidget {
               );
             },
           ),
+          // Hanya tampilkan jika bukan pedagang
+          if (_userRole != 'pedagang')
+            ListTile(
+              leading: const Icon(Icons.store_mall_directory),
+              title: const Text('Upgrade Menjadi Pedagang'),
+              onTap: () {
+                Navigator.pushNamed(context, '/verify_merchant_profile');
+              },
+            ),
           const Divider(),
           ListTile(
             leading: const Icon(Icons.logout, color: Colors.red),

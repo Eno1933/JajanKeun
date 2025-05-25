@@ -35,7 +35,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
   final userId = prefs.getString('user_id') ?? '';
 
   final response = await http.post(
-    Uri.parse('http://192.168.12.44/jajankeun_api/update_profile.php'),
+    Uri.parse('http://192.168.222.44/jajankeun_api/update_profile.php'),
     body: {
       'user_id': userId,
       'name'   : nameController.text,

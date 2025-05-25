@@ -67,14 +67,13 @@ class _RegisterPageState extends State<RegisterPage> {
         child: Column(
           children: [
             SizedBox(
-              width: double.infinity,
-              height: 180,
-              child: Image.asset(
-                'assets/images/login_illustration.png',
-                fit: BoxFit.cover,
-                alignment: Alignment.topCenter,
+                width: double.infinity,
+                height: 180,
+                child: Image.asset(
+                  'assets/images/login_illustration.png',
+                  fit: BoxFit.cover,
+                ),
               ),
-            ),
             const SizedBox(height: 30),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 24),

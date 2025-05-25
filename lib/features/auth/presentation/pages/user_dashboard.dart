@@ -21,6 +21,8 @@ class _UserDashboardState extends State<UserDashboard> {
 
   String userName = '';
   String userPhoto = '';
+  String userRole = '';
+  bool _isLoading = true;
 
   @override
   void initState() {
@@ -33,15 +35,20 @@ class _UserDashboardState extends State<UserDashboard> {
     setState(() {
       userName = prefs.getString('name') ?? '';
       userPhoto = prefs.getString('photo') ?? '';
+      userRole = prefs.getString('user_role') ?? '';
+      _isLoading = false;
     });
   }
 
   Future<void> _openProfile() async {
-    final result = await Navigator.pushNamed(context, '/profile');
-    if (result != null) {
-      await loadUserData(); // refresh data tanpa bergantung pada true/false
-    }
+  final result = await Navigator.pushNamed(context, '/profile');
+  
+  // Apapun hasilnya, refresh user data saat kembali dari halaman profile
+  if (result == true) {
+    await loadUserData(); // pastikan ini memuat ulang SharedPreferences
   }
+}
+
 
   void _onMenuSelected(String value) {
     if (value == 'notifikasi') {
@@ -50,6 +57,8 @@ class _UserDashboardState extends State<UserDashboard> {
       );
     } else if (value == 'pengaturan') {
       Navigator.pushNamed(context, '/settings');
+    } else if (value == 'dashboard_pedagang') {
+      Navigator.pushReplacementNamed(context, '/merchant_dashboard');
     }
   }
 
@@ -69,8 +78,10 @@ class _UserDashboardState extends State<UserDashboard> {
                   child: CircleAvatar(
                     radius: 20,
                     backgroundImage: userPhoto.isNotEmpty
-                        ? NetworkImage('http://192.168.12.44/jajankeun_api/uploads/profile/$userPhoto')
-                        : const AssetImage('assets/images/user.png') as ImageProvider,
+                        ? NetworkImage(
+                            'http://192.168.222.44/jajankeun_api/uploads/profile/$userPhoto?timestamp=${DateTime.now().millisecondsSinceEpoch}')
+                        : const AssetImage('assets/images/user.png')
+                            as ImageProvider,
                   ),
                 ),
                 const SizedBox(width: 10),
@@ -83,14 +94,31 @@ class _UserDashboardState extends State<UserDashboard> {
                     ),
                   ),
                 ),
-                PopupMenuButton<String>(
-                  icon: const Icon(Icons.menu, color: Colors.black),
-                  onSelected: _onMenuSelected,
-                  itemBuilder: (_) => const [
-                    PopupMenuItem(value: 'notifikasi', child: Text('Notifikasi')),
-                    PopupMenuItem(value: 'pengaturan', child: Text('Pengaturan')),
-                  ],
-                ),
+                _isLoading
+                    ? const SizedBox.shrink() // atau spinner
+                    : PopupMenuButton<String>(
+                        icon: const Icon(Icons.menu, color: Colors.black),
+                        onSelected: _onMenuSelected,
+                        itemBuilder: (_) {
+                          final items = <PopupMenuEntry<String>>[
+                            const PopupMenuItem(
+                                value: 'notifikasi', child: Text('Notifikasi')),
+                            const PopupMenuItem(
+                                value: 'pengaturan', child: Text('Pengaturan')),
+                          ];
+
+                          if (userRole == 'pedagang') {
+                            items.add(
+                              const PopupMenuItem(
+                                value: 'dashboard_pedagang',
+                                child: Text('Dashboard Pedagang'),
+                              ),
+                            );
+                          }
+
+                          return items;
+                        },
+                      )
               ],
             ),
           ),
@@ -120,7 +148,8 @@ class _UserDashboardState extends State<UserDashboard> {
                   delegate: SliverChildBuilderDelegate(
                     (ctx, i) {
                       return Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 16, vertical: 8),
                         child: Container(
                           decoration: BoxDecoration(
                             gradient: const LinearGradient(
@@ -136,7 +165,8 @@ class _UserDashboardState extends State<UserDashboard> {
                               children: [
                                 Expanded(
                                   child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
                                       Text(
                                         canteens[i],
@@ -149,17 +179,21 @@ class _UserDashboardState extends State<UserDashboard> {
                                       const SizedBox(height: 4),
                                       Text(
                                         "We are here with the best food",
-                                        style: GoogleFonts.poppins(color: Colors.white70),
+                                        style: GoogleFonts.poppins(
+                                            color: Colors.white70),
                                       ),
                                       const SizedBox(height: 8),
                                       ElevatedButton(
                                         onPressed: () {},
                                         style: ElevatedButton.styleFrom(
                                           backgroundColor: Colors.white,
-                                          foregroundColor: const Color(0xFF25523B),
-                                          padding: const EdgeInsets.symmetric(horizontal: 20),
+                                          foregroundColor:
+                                              const Color(0xFF25523B),
+                                          padding: const EdgeInsets.symmetric(
+                                              horizontal: 20),
                                           shape: RoundedRectangleBorder(
-                                            borderRadius: BorderRadius.circular(8),
+                                            borderRadius:
+                                                BorderRadius.circular(8),
                                           ),
                                         ),
                                         child: const Text("Kunjungi"),
@@ -196,15 +230,14 @@ class _UserDashboardState extends State<UserDashboard> {
         onTap: (index) {
           if (index == 3) {
             Navigator.pushNamed(context, '/profile');
-          }
-          else if(index == 2) {
+          } else if (index == 2) {
             Navigator.pushNamed(context, '/orders');
           }
           // handle other tabs...
         },
         type: BottomNavigationBarType.fixed,
         items: const [
-         BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
+          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
           BottomNavigationBarItem(
               icon: Icon(Icons.shopping_cart), label: 'Cart'),
           BottomNavigationBarItem(

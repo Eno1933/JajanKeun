@@ -1,6 +1,4 @@
 import 'dart:convert';
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -56,7 +54,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
 
     final req = http.MultipartRequest(
       'POST',
-      Uri.parse('http://192.168.12.44/jajankeun_api/update_photo.php'),
+      Uri.parse('http://192.168.222.44/jajankeun_api/update_photo.php'),
     );
     req.fields['user_id'] = userId;
     req.files.add(await http.MultipartFile.fromPath('photo', picked.path));
@@ -143,7 +141,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.black),
-          onPressed: () => Navigator.pop(context),
+          onPressed: () => Navigator.pop(context, true), // <- kembalikan true
         ),
         actions: [
           Padding(
@@ -175,7 +173,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
                   backgroundImage: userData['photo'] != null &&
                           userData['photo']!.isNotEmpty
                       ? NetworkImage(
-                          'http://192.168.12.44/jajankeun_api/uploads/profile/${userData['photo']}')
+                          'http://192.168.222.44/jajankeun_api/uploads/profile/${userData['photo']}?v=${DateTime.now().millisecondsSinceEpoch}')
                       : const AssetImage('assets/images/user.png')
                           as ImageProvider,
                 ),
